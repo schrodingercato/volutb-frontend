@@ -1,87 +1,107 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Activity, List, Upload as UploadIcon, LayoutDashboard, Bell, LogOut } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Home, List, Upload as UploadIcon, Lock, ChevronDown, User, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const KlinisiLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Ambil data mock clinician dari localStorage
   const clinicianData = JSON.parse(localStorage.getItem('volutb_clinician') || '{}');
-  const clinicianName = clinicianData.name || "Dr. Gregory S.";
-  const specialization = clinicianData.specialization || "Sp. Rad (K) TR";
+  const clinicianName = clinicianData.name || "admin";
+  const specialization = clinicianData.specialization || "Available";
+
+  // Map path ke Page Title
+  const getPageTitle = (path: string) => {
+    if (path.includes('dashboard')) return 'Dashboard';
+    if (path.includes('worklist')) return 'Worklist Kasus';
+    if (path.includes('upload')) return 'Upload Data Rontgen';
+    return 'VoluTB Dashboard';
+  };
 
   return (
-    <div className="flex flex-col h-screen bg-[#030509] text-slate-300 font-['Outfit'] font-light overflow-hidden selection:bg-[#06b6d4] selection:text-white">
+    <div className="flex h-screen bg-[#f2f6f7] font-sans text-slate-800 overflow-hidden">
       
-      {/* Premium Ambient Background */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#1e3a8a]/10 blur-[150px] mix-blend-screen" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.1] mix-blend-overlay"></div>
-      </div>
-
-      {/* Floating Topbar Header */}
-      <div className="px-8 py-6 z-50">
-        <div className="h-16 bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-[1.5rem] flex items-center justify-between px-6 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
-          
-          {/* Left Side: Logo & Status */}
-          <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-3 text-white font-black text-xl tracking-tight group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#06b6d4] to-[#1e3a8a] flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.3)] group-hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] transition-all">
-                <Activity size={20} className="text-white" />
-              </div>
-              VOLUTB<span className="font-['Playfair_Display'] italic font-normal text-[#06B6D4]">Studio.</span>
-            </Link>
-            
-            <div className="h-6 w-px bg-white/10"></div>
-            
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#06b6d4] shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse"></div>
-              <span className="text-[10px] text-[#06b6d4] font-mono tracking-widest uppercase font-bold">Secure Gateway Active</span>
+      {/* LEFT SIDEBAR */}
+      <aside className="w-[260px] bg-clinical text-white flex flex-col shadow-lg z-20 shrink-0">
+         {/* Logo Area */}
+         <div className="h-16 flex items-center px-6 gap-3 mb-6 mt-2">
+            <div className="w-8 h-8 bg-white/20 rounded-md flex items-center justify-center backdrop-blur-sm">
+               <span className="font-serif italic font-bold">V</span>
             </div>
-          </div>
+            <span className="text-lg font-bold tracking-wide">VoluTB</span>
+            <Lock size={16} className="ml-auto opacity-70" />
+         </div>
 
-          {/* Center Navigation */}
-          <div className="flex items-center gap-2">
-            <NavItem to="/klinisi/worklist" icon={<List size={16} />} label="Worklist Kasus" current={location.pathname} />
-            <NavItem to="/klinisi/upload" icon={<UploadIcon size={16} />} label="Upload CXR" current={location.pathname} />
-            <NavItem to="/klinisi/dashboard/demo" icon={<LayoutDashboard size={16} />} label="Analitik Spasial" current={location.pathname} />
-          </div>
+         {/* Navigation Menu */}
+         <nav className="flex-1 px-4 flex flex-col gap-1 overflow-y-auto custom-scrollbar-light">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-white/60 mb-2 mt-4 px-3">Dashboard</span>
+            <NavItem to="/klinisi/dashboard/demo" icon={<Home size={18} />} label="Home" current={location.pathname} />
 
-          {/* Right Side: Profile & Notification */}
-          <div className="flex items-center gap-5">
-            <button className="relative w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 transition-colors">
-              <Bell size={18} />
-              <div className="absolute top-0 right-0 w-3 h-3 bg-[#06b6d4] rounded-full border-2 border-[#030509] shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
-            </button>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-white/60 mb-2 mt-6 px-3">Kasus Medis</span>
+            <NavItem to="/klinisi/worklist" icon={<List size={18} />} label="Worklist Kasus" current={location.pathname} />
+            <NavItem to="/klinisi/upload" icon={<UploadIcon size={18} />} label="Upload CXR" current={location.pathname} />
             
-            <div className="flex items-center gap-3 pl-5 border-l border-white/10">
+            <div className="mt-auto mb-6">
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('volutb_clinician');
+                  navigate('/klinisi/login');
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+              >
+                <LogOut size={18} />
+                <span>Log Out</span>
+              </button>
+            </div>
+         </nav>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        {/* TOPBAR */}
+        <header className="h-[72px] bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-10 shadow-sm">
+           <h1 className="text-lg font-medium text-slate-700">{getPageTitle(location.pathname)}</h1>
+           
+           <div className="flex items-center gap-4">
               <div className="flex flex-col items-end">
-                <span className="text-sm font-bold text-white">{clinicianName}</span>
-                <span className="text-[9px] text-[#06B6D4] font-mono font-bold uppercase tracking-widest">{specialization}</span>
+                 <span className="text-sm font-bold text-slate-800 leading-tight">{clinicianName}</span>
+                 <span className="text-[10px] text-clinical font-bold">{specialization}</span>
               </div>
-              <div className="w-10 h-10 rounded-full border border-[#06B6D4]/30 bg-white/5 flex items-center justify-center overflow-hidden">
-                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(clinicianName)}&background=030509&color=06B6D4&bold=true`} alt="Avatar" className="w-full h-full" />
+              <div className="w-10 h-10 bg-[#ffc5c5] rounded-full flex items-center justify-center overflow-hidden border border-slate-200">
+                <User size={24} className="text-slate-600 mt-2" />
               </div>
-            </div>
-            
-            <Link to="/klinisi/login" className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 flex items-center justify-center text-red-400 transition-all ml-2" onClick={() => localStorage.removeItem('volutb_clinician')}>
-              <LogOut size={16} />
-            </Link>
-          </div>
+           </div>
+        </header>
 
-        </div>
-      </div>
+        {/* PAGE CONTENT */}
+        <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+           <Outlet />
+        </main>
+        
+        {/* FOOTER */}
+        <footer className="h-12 border-t border-slate-200 flex justify-between items-center px-8 text-[11px] text-slate-400 font-medium shrink-0 bg-[#f2f6f7]">
+           <div className="flex gap-4">
+              <span className="hover:text-slate-600 cursor-pointer transition-colors">Privacy Policy</span>
+              <span className="hover:text-slate-600 cursor-pointer transition-colors">Terms of Use</span>
+           </div>
+           <div>
+              Copyright 2024 <span className="text-clinical font-bold cursor-pointer hover:underline">VoluTB System</span>. All Rights Reserved.
+           </div>
+        </footer>
 
-      {/* Main Workspace Area */}
-      <div className="flex-1 overflow-y-auto px-8 pb-8 relative z-10 custom-scrollbar">
-         <Outlet />
       </div>
 
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(6, 182, 212, 0.5); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+        
+        .custom-scrollbar-light::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar-light::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar-light::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
       `}</style>
     </div>
   );
@@ -90,10 +110,16 @@ export const KlinisiLayout = () => {
 const NavItem = ({ to, icon, label, current }: any) => {
   const active = current.includes(to);
   return (
-    <Link to={to} className={`flex items-center gap-2 px-4 py-2.5 text-[11px] uppercase tracking-widest rounded-xl transition-all relative font-bold ${active ? 'text-white bg-white/10 border border-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}>
+    <Link 
+      to={to} 
+      className={`flex items-center gap-3 px-4 py-3 text-sm rounded-lg transition-all ${
+        active 
+          ? 'bg-white text-clinical font-bold shadow-sm' 
+          : 'text-white/80 hover:bg-white/10 hover:text-white'
+      }`}
+    >
       {icon}
-      {label}
-      {active && <motion.div layoutId="topNavIndicator" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1 bg-[#06B6D4] rounded-t-full shadow-[0_0_10px_rgba(6,182,212,1)]" />}
+      <span>{label}</span>
     </Link>
   );
 };

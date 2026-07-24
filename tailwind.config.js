@@ -14,6 +14,9 @@ export default {
           700: '#1e293b',
         },
         clinical: {
+          DEFAULT: '#3b8a95',
+          dark: '#2c6b74',
+          light: '#e8f3f4',
           blue: '#3b82f6',
           blueHover: '#60a5fa',
           teal: '#14b8a6',
