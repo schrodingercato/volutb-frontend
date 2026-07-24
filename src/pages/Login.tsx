@@ -92,7 +92,7 @@ export const Login = () => {
                        value={idNumber}
                        onChange={(e) => setIdNumber(e.target.value)}
                        placeholder="e.g. 12345 (Dokter) / 16 Digit (Pasien)"
-                       className="w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all bg-slate-50 placeholder:text-slate-400 font-medium"
+                       className="w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all bg-slate-50 text-slate-900 placeholder:text-slate-400 font-medium"
                        required
                      />
                   </div>
@@ -109,7 +109,7 @@ export const Login = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="w-full border border-slate-200 rounded-xl pl-4 pr-12 py-3.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all bg-[#fffaeb] font-medium"
+                          className="w-full border border-slate-200 rounded-xl pl-4 pr-12 py-3.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all bg-[#fffaeb] text-slate-900 font-medium"
                           required
                         />
                         <button 

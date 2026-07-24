@@ -74,7 +74,7 @@ export const Home = () => {
                   <div className="bg-slate-50 rounded-2xl flex flex-col p-4 border border-slate-100 items-center justify-center relative overflow-hidden group">
                      <span className="absolute top-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest z-10">Rontgen 2D</span>
                      {/* Dummy Image for X-ray */}
-                     <img src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&q=80&w=400" alt="Chest X-Ray Dummy" className="w-32 h-40 object-cover rounded-xl shadow-sm mb-4 mix-blend-multiply opacity-80" />
+                     <img src="/gambardummy.jpeg" alt="Chest X-Ray Dummy" className="w-32 h-40 object-cover rounded-xl shadow-sm mb-4" />
                      <h3 className="font-bold text-slate-700 text-sm">Data Awal</h3>
                      <p className="text-[10px] text-slate-500 font-medium">1 Foto Rontgen PA</p>
                   </div>
@@ -82,7 +82,7 @@ export const Home = () => {
                   {/* Card 2: 3D Output */}
                   <div className="bg-[#f0f4f8] rounded-2xl flex flex-col p-4 border border-slate-200/50 items-center justify-center relative overflow-hidden">
                      {/* Dummy Image for 3D Lungs */}
-                     <img src="https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=400" alt="3D Reconstruction Dummy" className="w-40 h-40 object-cover rounded-full shadow-lg mb-4 border-4 border-white object-center" />
+                     <img src="/hero_lung.png" alt="3D Reconstruction Dummy" className="w-40 h-40 object-cover rounded-full shadow-lg mb-4 border-4 border-white object-center" />
                      <h3 className="font-bold text-[#3b8a95] text-sm">Hasil Rekonstruksi 3D</h3>
                      <p className="text-[10px] text-slate-500 font-medium text-center">Lokasi Presisi &amp; Volume</p>
                   </div>
