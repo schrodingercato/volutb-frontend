@@ -35,7 +35,7 @@ export const Home = () => {
   const shadowCard = isDark ? "shadow-[0_30px_60px_rgba(0,0,0,0.5)]" : "shadow-[0_30px_60px_rgba(14,165,233,0.1)]";
 
   // Premium Animation Curves
-  const customEase = [0.22, 1, 0.36, 1];
+  const customEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
   
   const containerVariants = {
     hidden: { opacity: 0 },
