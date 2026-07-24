@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { LogOut, HeartPulse, CheckCircle2, Calendar, Download, Pill, ChevronRight, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export const PasienDashboard = () => {
+  const navigate = useNavigate();
   const [activeMonth, setActiveMonth] = useState(2); // Default to month 2
   
   const timelineData = [
@@ -25,7 +27,13 @@ export const PasienDashboard = () => {
            
            <div className="flex items-center gap-6 text-sm font-bold text-slate-600">
              <span className="hidden md:inline-block">Halo, Bapak Budi</span>
-             <button className="flex items-center gap-2 hover:text-red-500 transition-colors bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+             <button 
+               onClick={() => {
+                 localStorage.removeItem('volutb_pasien');
+                 navigate('/login');
+               }}
+               className="flex items-center gap-2 hover:text-red-500 transition-colors bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200"
+             >
                <LogOut size={16} /> <span className="hidden md:inline-block">Keluar</span>
              </button>
            </div>

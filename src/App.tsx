@@ -40,6 +40,9 @@ function App() {
           <Route index element={<Navigate to="/pasien/beranda" replace />} />
           <Route path="beranda" element={<PasienDashboard />} />
         </Route>
+
+        {/* Catch-all 404 Route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
