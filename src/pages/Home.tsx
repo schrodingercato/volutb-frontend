@@ -39,11 +39,7 @@ export const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-[10px] font-bold uppercase tracking-widest text-[#3b8a95] mb-6 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#3b8a95] animate-pulse"></span>
-              Alat Bantu Keputusan Klinis
-            </div>
-            
+
             <h1 className="text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-slate-800 mb-6">
               Sistem<br />
               <span className="text-[#3b8a95]">Rekonstruksi 3D</span><br />
