@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UploadCloud, CheckCircle2, AlertCircle, FileText, CalendarClock } from 'lucide-react';
+import { UploadCloud, CheckCircle2, AlertCircle, FileText, CalendarClock, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const Upload = () => {

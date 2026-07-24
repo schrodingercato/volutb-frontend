@@ -15,8 +15,8 @@ import { CaseDetail } from './pages/klinisi/CaseDetail';
 import { Dashboard as KlinisiPatientDashboard } from './pages/klinisi/Dashboard';
 
 // Pasien Pages
-import { Login as PasienLogin } from './pages/pasien/Login';
-import { Dashboard as PasienDashboard } from './pages/pasien/Dashboard';
+import { PasienLogin } from './pages/pasien/Login';
+import { PasienDashboard } from './pages/pasien/Dashboard';
 
 function App() {
   return (
