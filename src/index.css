@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-slate-200 font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-charcoal-800/70 backdrop-blur-xl border border-white/5 shadow-2xl rounded-xl;
+  }
+  .glass-panel-light {
+    @apply bg-charcoal-700/50 backdrop-blur-lg border border-white/5 shadow-xl rounded-xl;
+  }
+  .clinical-gradient {
+    @apply bg-gradient-to-br from-charcoal-900 to-background;
+  }
+}
