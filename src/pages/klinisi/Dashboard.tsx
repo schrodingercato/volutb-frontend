@@ -2,6 +2,89 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Maximize2, Rotate3D, Layers, Eye, ShieldCheck, FileWarning, ArrowRight, Download, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Sphere, Box } from '@react-three/drei';
+
+// --- 3D Components ---
+
+// Simulated Transparent Lung Lobe
+const LungLobe = ({ position, rotation }: { position: [number, number, number], rotation: [number, number, number] }) => {
+  return (
+    <mesh position={position} rotation={rotation}>
+      <capsuleGeometry args={[1.5, 4, 16, 32]} />
+      <meshPhysicalMaterial 
+        color="#34d399" 
+        transparent 
+        opacity={0.15} 
+        roughness={0.1}
+        transmission={0.9}
+        thickness={1}
+      />
+    </mesh>
+  );
+};
+
+// Simulated TB Cavity (Lesion)
+const Cavity = ({ position, scale = 1, isAmber = false }: { position: [number, number, number], scale?: number, isAmber?: boolean }) => {
+  return (
+    <mesh position={position} scale={scale}>
+      <sphereGeometry args={[0.4, 16, 16]} />
+      <meshStandardMaterial 
+        color={isAmber ? "#fbbf24" : "#ef4444"} 
+        emissive={isAmber ? "#f59e0b" : "#dc2626"}
+        emissiveIntensity={0.5}
+        roughness={0.8}
+      />
+    </mesh>
+  );
+};
+
+const Scene3D = ({ isolateLesion }: { isolateLesion: boolean }) => {
+  return (
+    <>
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <pointLight position={[-10, -10, -5]} intensity={0.5} color="#3b8a95" />
+
+      {/* OrbitControls allows user to drag, rotate, and zoom the 3D scene */}
+      <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} autoRotate={!isolateLesion} autoRotateSpeed={1} />
+
+      <group position={[0, 0, 0]} scale={isolateLesion ? 2 : 1}>
+        {/* Render Lungs only if not isolating lesions */}
+        {!isolateLesion && (
+          <>
+            {/* Right Lung (from patient perspective, left side of screen) */}
+            <LungLobe position={[-1.8, 0, 0]} rotation={[0, 0, -0.1]} />
+            {/* Left Lung */}
+            <LungLobe position={[1.8, 0, 0]} rotation={[0, 0, 0.1]} />
+          </>
+        )}
+
+        {/* Trachea (Mock) */}
+        {!isolateLesion && (
+          <mesh position={[0, 3, 0]}>
+            <cylinderGeometry args={[0.3, 0.3, 2, 16]} />
+            <meshStandardMaterial color="#cbd5e1" transparent opacity={0.3} />
+          </mesh>
+        )}
+
+        {/* Right Upper Lobe Lesions */}
+        <group position={[-1.5, 1.5, 0.5]}>
+           <Cavity position={[0, 0, 0]} scale={1.2} />
+           <Cavity position={[0.3, 0.2, 0.2]} scale={0.8} isAmber={true} />
+           <Cavity position={[-0.2, -0.3, -0.1]} scale={0.6} />
+        </group>
+
+        {/* Left Upper Lobe Lesion */}
+        <group position={[1.2, 1.8, -0.2]}>
+           <Cavity position={[0, 0, 0]} scale={0.9} />
+        </group>
+      </group>
+    </>
+  );
+};
+
+// --- Main Dashboard Component ---
 
 export const Dashboard = () => {
   const navigate = useNavigate();
@@ -65,53 +148,30 @@ export const Dashboard = () => {
                  </div>
               </div>
 
-              {/* 3D Mockup Viewport */}
-              <div className="flex-1 bg-slate-900 rounded-2xl relative overflow-hidden flex items-center justify-center group border border-slate-800">
+              {/* Real 3D Viewport (Three.js) */}
+              <div className="flex-1 bg-slate-900 rounded-2xl relative overflow-hidden flex items-center justify-center group border border-slate-800 cursor-move">
                  
-                 {/* Mockup 3D Lung */}
-                 {viewMode === 'lungs' ? (
-                   <motion.div initial={{opacity:0}} animate={{opacity:1}} className="relative w-[300px] h-[350px]">
-                      {/* Left Lung */}
-                      <div className="absolute left-4 top-10 w-28 h-64 bg-emerald-400/20 rounded-[40%] blur-sm border border-emerald-400/30 rotate-[-5deg]"></div>
-                      {/* Right Lung */}
-                      <div className="absolute right-4 top-10 w-28 h-64 bg-emerald-400/20 rounded-[40%] blur-sm border border-emerald-400/30 rotate-[5deg]"></div>
-                      
-                      {/* Trachea */}
-                      <div className="absolute left-1/2 -translate-x-1/2 top-0 w-4 h-24 bg-white/10 blur-[2px]"></div>
+                 <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+                    <Scene3D isolateLesion={viewMode === 'lesion'} />
+                 </Canvas>
 
-                      {/* Lesions (Apical Right) */}
-                      <div className="absolute left-12 top-16 w-12 h-14 bg-red-500/80 rounded-full blur-[2px] animate-pulse"></div>
-                      <div className="absolute left-16 top-20 w-6 h-6 bg-amber-400/90 rounded-full blur-[1px]"></div>
-                      
-                      {/* Lesions (Apical Left) */}
-                      <div className="absolute right-14 top-14 w-8 h-8 bg-red-500/60 rounded-full blur-[2px]"></div>
-                      
-                      {/* Annotations */}
-                      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-emerald-400 text-xs font-bold tracking-widest uppercase flex flex-col items-center gap-1 opacity-70">
-                         <div className="h-6 w-px bg-emerald-400 border-dashed"></div>
-                         Lung Areas
-                      </div>
-                   </motion.div>
+                 {/* Instructions Overlay */}
+                 <div className="absolute top-4 left-4 text-white/50 text-xs font-medium pointer-events-none">
+                   <p>Gunakan mouse untuk memutar (Klik & Geser)</p>
+                   <p>Gunakan scroll untuk Zoom In/Out</p>
+                 </div>
+
+                 {/* Annotations Overlay (HTML over Canvas) */}
+                 {viewMode === 'lungs' ? (
+                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-emerald-400 text-xs font-bold tracking-widest uppercase flex flex-col items-center gap-1 opacity-70 pointer-events-none">
+                      <div className="h-6 w-px bg-emerald-400 border-dashed"></div>
+                      Lung Areas
+                   </div>
                  ) : (
-                   <motion.div initial={{opacity:0, scale:0.8}} animate={{opacity:1, scale:1.2}} className="relative w-[200px] h-[200px] flex items-center justify-center">
-                      <div className="relative">
-                         <div className="w-32 h-28 bg-red-500/60 rounded-3xl blur-[1px] relative">
-                            {/* Inner Cavities */}
-                            <div className="absolute top-4 left-4 w-8 h-8 bg-slate-900/80 rounded-full"></div>
-                            <div className="absolute bottom-6 right-6 w-10 h-6 bg-slate-900/80 rounded-full"></div>
-                            <div className="absolute top-10 right-4 w-6 h-6 bg-blue-500/60 rounded-full blur-[2px]"></div>
-                         </div>
-                         {/* Annotations */}
-                         <div className="absolute -right-24 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                           <div className="w-12 h-px bg-red-400 border-dashed"></div>
-                           <span className="text-red-400 font-bold text-xs uppercase tracking-widest">C-LCW</span>
-                         </div>
-                      </div>
-                      <div className="absolute bottom-[-40px] text-blue-300 text-xs font-bold tracking-widest uppercase flex flex-col items-center gap-1 opacity-70">
-                         <div className="h-6 w-px bg-blue-300 border-dashed"></div>
-                         Lung Cavity
-                      </div>
-                   </motion.div>
+                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-red-400 text-xs font-bold tracking-widest uppercase flex flex-col items-center gap-1 opacity-70 pointer-events-none">
+                      <div className="h-6 w-px bg-red-400 border-dashed"></div>
+                      Isolated TB Cavities
+                   </div>
                  )}
 
                  {/* Viewport Controls */}
