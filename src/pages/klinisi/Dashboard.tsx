@@ -1,146 +1,244 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, ShieldCheck, Database, Calendar } from 'lucide-react';
-import { mockQuery } from '../../data/mockDatabase';
+import { Maximize2, Rotate3D, Layers, Eye, ShieldCheck, FileWarning, ArrowRight, Download, Activity } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState<any>(null);
-
-  useEffect(() => {
-    // Simulasi Fetching dari API
-    const res = mockQuery.getPatientData("P-089");
-    setData(res);
-  }, []);
-
-  if (!data) return <div className="p-10 text-slate-500">Memuat data diagnostik...</div>;
-  const { patient, scan } = data;
+  const [viewMode, setViewMode] = useState<'lungs' | 'lesion'>('lungs');
+  
+  const handleApprove = () => {
+    navigate('/klinisi/worklist');
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto flex flex-col gap-6 font-sans">
+    <div className="w-full h-full flex flex-col gap-6 font-sans">
       
-      {/* Tab Navigation (Static) */}
-      <div className="flex gap-4">
-         <button className="bg-clinical text-white px-8 py-3 rounded-xl text-sm font-medium shadow-sm w-48 transition-colors">
-            Analisis Spasial
-         </button>
-         <button onClick={() => navigate('/klinisi/worklist')} className="bg-white text-slate-500 hover:bg-slate-50 px-8 py-3 rounded-xl text-sm font-medium border border-slate-200 shadow-sm w-48 transition-colors">
-            Kembali ke Worklist
-         </button>
-      </div>
-
-      {/* Patient Header Card */}
-      <div className="bg-white rounded-[1.5rem] border border-slate-200 p-6 flex justify-between items-center shadow-sm">
-         <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
-               <Database size={20} />
+      {/* Patient Header */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex justify-between items-center shrink-0">
+         <div className="flex items-center gap-6">
+            <div className="flex flex-col">
+               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">ID KASUS</span>
+               <span className="text-xl font-bold text-slate-800">CS-2024-089</span>
             </div>
-            <div>
-               <h2 className="text-lg font-bold text-slate-800">Detail Kasus: {patient.name}</h2>
-               <p className="text-xs text-slate-500">Rekam Medis: {patient.nik} | Usia: {patient.age} Thn | Gender: {patient.gender}</p>
+            <div className="h-10 w-px bg-slate-200"></div>
+            <div className="flex flex-col">
+               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">PASIEN</span>
+               <div className="flex items-center gap-2">
+                 <span className="text-lg font-bold text-[#3b8a95]">Budi Santoso</span>
+                 <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-bold">3201****5678</span>
+               </div>
             </div>
          </div>
-         <div className="flex gap-4">
-            <div className="flex flex-col items-end">
-               <span className="text-xs text-slate-400 font-medium">Status</span>
-               <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full mt-1">
-                 {patient.status}
-               </span>
-            </div>
-            <div className="flex flex-col items-end">
-               <span className="text-xs text-slate-400 font-medium">Tanggal Pemeriksaan</span>
-               <div className="flex items-center gap-1 text-sm font-bold text-slate-700 mt-1">
-                  <Calendar size={14} className="text-clinical" />
-                  {scan.date}
-               </div>
+         <div className="flex items-center gap-3">
+            <div className="bg-[#3b8a95]/10 text-[#3b8a95] px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+               <Activity size={16} />
+               Timepoint: Bulan ke-2 (Fase Intensif)
             </div>
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-         
-         {/* Clinical Metrics */}
-         <div className="col-span-1 flex flex-col gap-6">
-            
-            <div className="bg-white border border-slate-200 rounded-[1.5rem] p-6 shadow-sm">
-               <h3 className="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3">Informasi Diagnostik</h3>
-               
-               <div className="flex flex-col gap-4">
-                 <div>
-                    <span className="text-xs text-slate-400 block mb-1">Diagnosa Awal</span>
-                    <span className="text-sm font-medium text-slate-800">{scan.initialDiagnosis}</span>
+      {/* Workbench Grid */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
+        
+        {/* LEFT COLUMN: 3D INTERACTIVE CANVAS */}
+        <div className="lg:col-span-7 flex flex-col gap-4">
+           <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm flex-1 p-6 flex flex-col relative overflow-hidden">
+              <div className="flex justify-between items-center mb-4 z-10 relative">
+                 <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                   <Rotate3D size={20} className="text-[#3b8a95]" />
+                   Interactive 3D Pseudo-CT Canvas
+                 </h3>
+                 <div className="flex bg-slate-100 p-1 rounded-lg">
+                    <button 
+                      onClick={() => setViewMode('lungs')}
+                      className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'lungs' ? 'bg-white text-[#3b8a95] shadow-sm' : 'text-slate-500'}`}
+                    >
+                      Full Anatomy
+                    </button>
+                    <button 
+                      onClick={() => setViewMode('lesion')}
+                      className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'lesion' ? 'bg-white text-red-500 shadow-sm' : 'text-slate-500'}`}
+                    >
+                      Isolate Lesion
+                    </button>
                  </div>
-                 <div>
-                    <span className="text-xs text-slate-400 block mb-1">Fokus Lokalisasi 3D</span>
-                    <span className="text-sm font-medium text-slate-800">{scan.focusPoint}</span>
-                 </div>
-                 <div>
-                    <span className="text-xs text-slate-400 block mb-1">Volume Kavitas Awal (Bulan 0)</span>
-                    <span className="text-sm font-medium text-slate-800">{scan.volumeBase} cm³</span>
-                 </div>
-                 <div>
-                    <span className="text-xs text-slate-400 block mb-1">Volume Kavitas Kini (Bulan 2)</span>
-                    <span className="text-sm font-bold text-emerald-600">{scan.volumeEval1} cm³</span>
-                 </div>
-               </div>
-            </div>
+              </div>
 
-            <div className="bg-[#f0f4f8] border border-slate-200/50 rounded-[1.5rem] p-6 shadow-sm relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <Activity size={64} className="text-clinical" />
-               </div>
-               <h3 className="text-sm font-bold text-slate-800 mb-3 relative z-10 flex items-center gap-2">
-                 <ShieldCheck size={16} className="text-clinical" /> Rekomendasi AI
-               </h3>
-               <p className="text-xs text-slate-600 leading-relaxed relative z-10 text-justify">
-                 {scan.recommendation}
-               </p>
-               <div className="mt-4 inline-block bg-clinical text-white text-[10px] font-bold px-3 py-1.5 rounded-full">
-                  Laju Penyusutan: {scan.trend}
-               </div>
-            </div>
-         </div>
+              {/* 3D Mockup Viewport */}
+              <div className="flex-1 bg-slate-900 rounded-2xl relative overflow-hidden flex items-center justify-center group border border-slate-800">
+                 
+                 {/* Mockup 3D Lung */}
+                 {viewMode === 'lungs' ? (
+                   <motion.div initial={{opacity:0}} animate={{opacity:1}} className="relative w-[300px] h-[350px]">
+                      {/* Left Lung */}
+                      <div className="absolute left-4 top-10 w-28 h-64 bg-emerald-400/20 rounded-[40%] blur-sm border border-emerald-400/30 rotate-[-5deg]"></div>
+                      {/* Right Lung */}
+                      <div className="absolute right-4 top-10 w-28 h-64 bg-emerald-400/20 rounded-[40%] blur-sm border border-emerald-400/30 rotate-[5deg]"></div>
+                      
+                      {/* Trachea */}
+                      <div className="absolute left-1/2 -translate-x-1/2 top-0 w-4 h-24 bg-white/10 blur-[2px]"></div>
 
-         {/* Main Chart Area */}
-         <div className="col-span-2 bg-white border border-slate-200 rounded-[1.5rem] flex flex-col overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-               <h3 className="text-sm font-bold text-slate-800">Kurva Regresi Volume Kavitas</h3>
-               <span className="text-[10px] text-slate-500 bg-white border border-slate-200 px-3 py-1 rounded-full font-medium">YOLOv8 + Voxel Diffusion</span>
-            </div>
-            
-            <div className="h-[400px] flex items-end justify-between px-16 pt-12 relative bg-white">
-               {/* Grid lines */}
-               <div className="absolute inset-0 z-0 flex flex-col justify-between p-8 pointer-events-none">
-                  <div className="w-full h-px bg-slate-100 border-b border-dashed border-slate-200"></div>
-                  <div className="w-full h-px bg-slate-100 border-b border-dashed border-slate-200"></div>
-                  <div className="w-full h-px bg-slate-100 border-b border-dashed border-slate-200"></div>
-                  <div className="w-full h-px bg-slate-100 border-b border-dashed border-slate-200"></div>
-               </div>
-               
-               {/* Base */}
-               <div className="z-10 flex flex-col items-center h-full justify-end w-1/4">
-                 <div className="w-20 h-[80%] bg-slate-200 rounded-t-lg relative border border-slate-300 flex justify-center">
-                    <span className="absolute -top-6 text-xs font-bold text-slate-600">{scan.volumeBase}cm³</span>
-                 </div>
-                 <div className="mt-4 text-xs font-bold text-slate-600">Baseline (Bln-0)</div>
-               </div>
-               
-               {/* Eval 1 */}
-               <div className="z-10 flex flex-col items-center h-full justify-end w-1/4">
-                 <div className="w-20 h-[35%] bg-clinical/20 rounded-t-lg relative border border-clinical/50 flex justify-center shadow-[0_-5px_15px_rgba(59,138,149,0.1)]">
-                    <span className="absolute -top-6 text-sm font-bold text-clinical">{scan.volumeEval1}cm³</span>
-                 </div>
-                 <div className="mt-4 text-xs font-bold text-clinical">Evaluasi (Bln-2)</div>
-               </div>
-               
-               {/* Eval Final (Predicted) */}
-               <div className="z-10 flex flex-col items-center h-full justify-end w-1/4 opacity-40">
-                 <div className="w-20 h-[10%] bg-slate-100 rounded-t-lg border border-dashed border-slate-300"></div>
-                 <div className="mt-4 text-xs font-bold text-slate-400">Proyeksi (Bln-6)</div>
-               </div>
-            </div>
-         </div>
+                      {/* Lesions (Apical Right) */}
+                      <div className="absolute left-12 top-16 w-12 h-14 bg-red-500/80 rounded-full blur-[2px] animate-pulse"></div>
+                      <div className="absolute left-16 top-20 w-6 h-6 bg-amber-400/90 rounded-full blur-[1px]"></div>
+                      
+                      {/* Lesions (Apical Left) */}
+                      <div className="absolute right-14 top-14 w-8 h-8 bg-red-500/60 rounded-full blur-[2px]"></div>
+                      
+                      {/* Annotations */}
+                      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-emerald-400 text-xs font-bold tracking-widest uppercase flex flex-col items-center gap-1 opacity-70">
+                         <div className="h-6 w-px bg-emerald-400 border-dashed"></div>
+                         Lung Areas
+                      </div>
+                   </motion.div>
+                 ) : (
+                   <motion.div initial={{opacity:0, scale:0.8}} animate={{opacity:1, scale:1.2}} className="relative w-[200px] h-[200px] flex items-center justify-center">
+                      <div className="relative">
+                         <div className="w-32 h-28 bg-red-500/60 rounded-3xl blur-[1px] relative">
+                            {/* Inner Cavities */}
+                            <div className="absolute top-4 left-4 w-8 h-8 bg-slate-900/80 rounded-full"></div>
+                            <div className="absolute bottom-6 right-6 w-10 h-6 bg-slate-900/80 rounded-full"></div>
+                            <div className="absolute top-10 right-4 w-6 h-6 bg-blue-500/60 rounded-full blur-[2px]"></div>
+                         </div>
+                         {/* Annotations */}
+                         <div className="absolute -right-24 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                           <div className="w-12 h-px bg-red-400 border-dashed"></div>
+                           <span className="text-red-400 font-bold text-xs uppercase tracking-widest">C-LCW</span>
+                         </div>
+                      </div>
+                      <div className="absolute bottom-[-40px] text-blue-300 text-xs font-bold tracking-widest uppercase flex flex-col items-center gap-1 opacity-70">
+                         <div className="h-6 w-px bg-blue-300 border-dashed"></div>
+                         Lung Cavity
+                      </div>
+                   </motion.div>
+                 )}
 
+                 {/* Viewport Controls */}
+                 <div className="absolute right-4 bottom-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-md flex items-center justify-center text-white backdrop-blur-sm"><Maximize2 size={16} /></button>
+                    <button className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-md flex items-center justify-center text-white backdrop-blur-sm"><Eye size={16} /></button>
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        {/* RIGHT COLUMN: MPR & VALIDATION */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+           
+           {/* MPR Slices */}
+           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 h-[220px] flex flex-col">
+              <h3 className="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+                <Layers size={16} className="text-[#3b8a95]" />
+                Multi-Planar Reconstruction (MPR)
+              </h3>
+              <div className="grid grid-cols-3 gap-2 flex-1">
+                 {/* Z-Axis (Axial) */}
+                 <div className="bg-slate-100 rounded-xl flex flex-col items-center p-2 relative overflow-hidden group">
+                    <div className="flex-1 w-full flex items-center justify-center relative">
+                       {/* Mockup Axial Slice */}
+                       <div className="w-20 h-16 bg-slate-300 rounded-full flex items-center justify-center relative blur-[0.5px]">
+                          <div className="w-6 h-8 bg-emerald-500/40 rounded-full absolute left-2 top-4"></div>
+                          <div className="w-6 h-8 bg-emerald-500/40 rounded-full absolute right-2 top-4"></div>
+                          <div className="w-3 h-3 bg-purple-500/80 rounded-full absolute left-3 top-5"></div>
+                       </div>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Z-Axis Section</span>
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-[#3b8a95]/20 group-hover:bg-[#3b8a95] transition-colors cursor-pointer"></div>
+                 </div>
+                 
+                 {/* Y-Axis (Coronal) */}
+                 <div className="bg-slate-100 rounded-xl flex flex-col items-center p-2 relative overflow-hidden group">
+                    <div className="flex-1 w-full flex items-center justify-center relative">
+                       <div className="w-20 h-24 bg-slate-300 rounded-t-full flex items-end justify-center pb-2 relative blur-[0.5px]">
+                          <div className="w-7 h-16 bg-emerald-500/40 rounded-t-full absolute left-2 bottom-2"></div>
+                          <div className="w-7 h-16 bg-emerald-500/40 rounded-t-full absolute right-2 bottom-2"></div>
+                          <div className="w-4 h-4 bg-purple-500/80 rounded-full absolute left-3 top-4"></div>
+                       </div>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Y-Axis Section</span>
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-[#3b8a95]/20 group-hover:bg-[#3b8a95] transition-colors cursor-pointer"></div>
+                 </div>
+                 
+                 {/* X-Axis (Sagittal) */}
+                 <div className="bg-slate-100 rounded-xl flex flex-col items-center p-2 relative overflow-hidden group">
+                    <div className="flex-1 w-full flex items-center justify-center relative">
+                       <div className="w-16 h-24 bg-slate-300 rounded-[30%] flex items-end justify-center pb-2 relative blur-[0.5px]">
+                          <div className="w-12 h-20 bg-emerald-500/40 rounded-t-full absolute left-2 bottom-2"></div>
+                          <div className="w-5 h-4 bg-purple-500/80 rounded-full absolute left-5 top-4"></div>
+                       </div>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">X-Axis Section</span>
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-[#3b8a95]/20 group-hover:bg-[#3b8a95] transition-colors cursor-pointer"></div>
+                 </div>
+              </div>
+           </div>
+
+           {/* 2D Cross Validation */}
+           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex-1 flex flex-col">
+              <h3 className="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck size={16} className="text-emerald-500" />
+                  2D Cross-Validation (Consistency)
+                </div>
+                <span className="bg-emerald-50 text-emerald-600 text-[9px] px-2 py-1 rounded-md uppercase font-bold tracking-widest">Konsisten</span>
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-2 flex-1">
+                 <div className="bg-slate-900 rounded-lg flex flex-col relative overflow-hidden">
+                    <div className="absolute top-2 left-2 text-[9px] text-white/70 font-bold bg-black/50 px-2 py-0.5 rounded">CXR Asli (PA)</div>
+                    <div className="flex-1 w-full flex items-center justify-center relative p-4">
+                       <div className="w-full h-full bg-slate-400 blur-sm rounded-[30%] opacity-50"></div>
+                       {/* Simulate rib cage lines */}
+                       <div className="absolute w-full h-px bg-white/20 top-1/4"></div>
+                       <div className="absolute w-full h-px bg-white/20 top-2/4"></div>
+                       <div className="absolute w-full h-px bg-white/20 top-3/4"></div>
+                    </div>
+                 </div>
+                 
+                 <div className="bg-slate-900 rounded-lg flex flex-col relative overflow-hidden">
+                    <div className="absolute top-2 left-2 text-[9px] text-white/70 font-bold bg-black/50 px-2 py-0.5 rounded">Deteksi AI (2D)</div>
+                    <div className="flex-1 w-full flex items-center justify-center relative p-4">
+                       <div className="w-full h-full bg-slate-400 blur-sm rounded-[30%] opacity-20"></div>
+                       {/* Highlight bounding box */}
+                       <div className="absolute top-6 left-6 w-8 h-8 border-2 border-red-500 rounded-sm"></div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+           
+           {/* Decision Gate & Export */}
+           <div className="bg-[#f0f4f8] rounded-2xl border border-slate-200/50 shadow-sm p-5 shrink-0 flex flex-col gap-4">
+              <div className="flex gap-2">
+                <FileWarning size={20} className="text-amber-500 shrink-0 mt-0.5" />
+                <div className="flex flex-col">
+                   <span className="text-sm font-bold text-slate-800">Panel Lokalisasi Anatomis</span>
+                   <span className="text-xs text-slate-600 leading-relaxed mt-1">Kavitas terdeteksi pada <strong className="text-amber-600">Lobus Superior Dextra</strong> (Paru Kanan Atas). Pola sebaran stabil tanpa indikasi artefak difusi stokastik.</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 mt-2">
+                 <button 
+                   onClick={() => alert("Re-analisis dikirim ke antrean AI")}
+                   className="flex-1 bg-white border border-red-200 text-red-500 font-bold text-sm py-3 rounded-xl hover:bg-red-50 transition-colors shadow-sm"
+                 >
+                   Reject / Re-analyse
+                 </button>
+                 <button 
+                   onClick={handleApprove}
+                   className="flex-1 bg-[#3b8a95] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#2c6b74] transition-colors shadow-sm flex items-center justify-center gap-2"
+                 >
+                   Approve & Publish
+                   <ArrowRight size={16} />
+                 </button>
+              </div>
+              
+              <button className="w-full flex items-center justify-center gap-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors mt-1">
+                 <Download size={14} /> Ekspor Laporan Medis (PDF)
+              </button>
+           </div>
+
+        </div>
       </div>
     </div>
   );

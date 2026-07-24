@@ -1,92 +1,108 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, ArrowRight, AlertCircle } from 'lucide-react';
+import { Database, ArrowRight, UserCheck, KeyRound } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { mockQuery } from '../../data/mockDatabase';
 
-export const Login = () => {
+export const PasienLogin = () => {
   const navigate = useNavigate();
   const [nik, setNik] = useState('');
-  const [dob, setDob] = useState('');
-  const [error, setError] = useState('');
+  const [activationCode, setActivationCode] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    
-    // Autentikasi dengan Mock Database
-    const result = mockQuery.loginPasien(nik, dob);
-    
-    if (result.success) {
-      // Simpan state user ke localStorage untuk demo
-      localStorage.setItem('volutb_patient', JSON.stringify(result.data));
-      navigate('/pasien/beranda');
-    } else {
-      setError(result.error || 'Autentikasi gagal');
+    if (nik && activationCode) {
+      localStorage.setItem('volutb_pasien', JSON.stringify({ nik }));
+      navigate('/pasien/dashboard');
     }
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden bg-[#f4f7fb] flex items-center justify-center font-['Outfit'] selection:bg-emerald-500 selection:text-white">
-      {/* Premium Clean Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <motion.div animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, -50, 0] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }} className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-400/10 blur-[150px] mix-blend-multiply" />
-        <motion.div animate={{ scale: [1, 1.5, 1], x: [0, -100, 0], y: [0, 50, 0] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-teal-400/10 blur-[150px] mix-blend-multiply" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-multiply"></div>
-      </div>
-      
-      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="relative z-10 w-full max-w-md p-10 bg-white/60 backdrop-blur-3xl border border-slate-200/60 rounded-[2.5rem] shadow-[0_30px_60px_rgba(16,185,129,0.08)]">
+    <div className="min-h-screen bg-[#f8fafc] flex">
+      {/* LEFT PANEL - ILLUSTRATION */}
+      <div className="hidden lg:flex w-1/2 bg-blue-500 relative flex-col justify-between p-12 overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-400 to-blue-700 opacity-90 z-0"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
         
-        {/* Header */}
-        <div className="flex flex-col items-center mb-10 text-center">
-          <div className="w-16 h-16 rounded-[1.5rem] bg-white border border-slate-200 flex items-center justify-center mb-6 shadow-sm">
-            <User size={32} className="text-emerald-500" />
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/30">
+            <span className="text-white font-serif italic text-xl font-bold">V</span>
           </div>
-          <p className="text-[10px] text-emerald-500 uppercase tracking-widest font-bold mb-2">Patient Portal</p>
-          <h1 className="text-4xl font-['Playfair_Display'] italic text-slate-800 tracking-tight">Patient <span className="font-['Outfit'] font-black not-italic text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-slate-500">Access.</span></h1>
+          <span className="text-white font-bold text-xl tracking-wide">VoluTB</span>
         </div>
-        
-        {/* Error Message */}
-        {error && (
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-center gap-3">
-             <AlertCircle size={18} className="text-red-500 shrink-0" />
-             <p className="text-xs text-red-600 font-medium">{error}</p>
-          </motion.div>
-        )}
-        
-        {/* Form */}
-        <form onSubmit={handleLogin} className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-             <label className="text-[10px] uppercase tracking-widest font-bold text-slate-500">Nomor NIK Anda</label>
-             <input 
-               type="text" 
-               value={nik}
-               onChange={(e) => setNik(e.target.value)}
-               placeholder="Contoh: 3201010101" 
-               className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-4 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all" 
-             />
+
+        <div className="relative z-10 max-w-md">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl mb-8 inline-block">
+             <Database className="text-white" size={32} />
           </div>
+          <h1 className="text-4xl font-bold text-white mb-6 leading-tight">
+            Pantau Progres <br/>Penyembuhan Anda.
+          </h1>
+          <p className="text-blue-100 text-lg leading-relaxed font-medium">
+            Akses riwayat kesehatan dan hasil rontgen Anda yang telah divalidasi oleh dokter spesialis secara aman dan mudah dipahami.
+          </p>
+        </div>
+
+        <div className="relative z-10 text-blue-200 text-sm font-medium">
+          © 2026 Tim Deenpeleb.
+        </div>
+      </div>
+
+      {/* RIGHT PANEL - LOGIN FORM */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
           
-          <div className="flex flex-col gap-2">
-             <label className="text-[10px] uppercase tracking-widest font-bold text-slate-500">Tanggal Lahir</label>
-             <input 
-               type="date" 
-               value={dob}
-               onChange={(e) => setDob(e.target.value)}
-               className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-4 text-sm text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all" 
-             />
-             <p className="text-[9px] text-slate-400 font-medium mt-1 ml-1">Hint: Coba 01-01-1990</p>
+          <div className="mb-10 text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-slate-800 mb-3 tracking-tight">Portal Pasien</h2>
+            <p className="text-slate-500 font-medium leading-relaxed">
+              Silakan masukkan NIK dan Kode Aktivasi yang Anda terima dari klinik/faskes Anda.
+            </p>
           </div>
-          
-          <button type="submit" className="w-full mt-4 bg-white border border-slate-200 hover:bg-emerald-500 hover:border-emerald-500 text-slate-800 hover:text-white font-bold py-4 rounded-2xl flex justify-center items-center gap-2 transition-all duration-300 group shadow-sm">
-            Lihat Data Saya <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </button>
-          
-          <button type="button" onClick={() => navigate('/')} className="text-[10px] text-slate-400 hover:text-slate-800 transition-colors mt-2 text-center w-full uppercase tracking-widest font-bold">
-            Kembali ke Beranda Utama
-          </button>
-        </form>
-      </motion.div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-2 relative">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nomor Induk Kependudukan (NIK)</label>
+              <div className="relative">
+                 <UserCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                 <input 
+                   type="text" 
+                   value={nik}
+                   onChange={(e) => setNik(e.target.value)}
+                   className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-700 placeholder:text-slate-400"
+                   placeholder="16 Digit NIK Anda"
+                   required
+                 />
+              </div>
+            </div>
+
+            <div className="space-y-2 relative">
+              <div className="flex justify-between items-center ml-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Kode Aktivasi</label>
+                 <a href="#" className="text-xs font-bold text-blue-500 hover:text-blue-600 transition-colors">Lupa Kode?</a>
+              </div>
+              <div className="relative">
+                 <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                 <input 
+                   type="text" 
+                   value={activationCode}
+                   onChange={(e) => setActivationCode(e.target.value)}
+                   className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-700 placeholder:text-slate-400"
+                   placeholder="Masukkan kode unik..."
+                   required
+                 />
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className="w-full bg-blue-500 text-white font-bold py-4 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 group mt-8"
+            >
+              Akses Rekam Medis
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </form>
+
+        </motion.div>
+      </div>
     </div>
   );
 };
