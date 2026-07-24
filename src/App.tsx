@@ -30,9 +30,7 @@ function App() {
           <Route index element={<Navigate to="/klinisi/worklist" replace />} />
           <Route path="worklist" element={<Worklist />} />
           <Route path="upload" element={<Upload />} />
-          <Route path="kasus/:id" element={<CaseDetail />} />
-          <Route path="dashboard/demo" element={<KlinisiPatientDashboard />} />
-          <Route path="dashboard/:nik" element={<KlinisiPatientDashboard />} />
+          <Route path="dashboard/:id" element={<KlinisiPatientDashboard />} />
         </Route>
 
         {/* Pasien Routes with Layout */}
